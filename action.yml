@@ -6,7 +6,7 @@ branding:
 inputs:
   repo:
     description: GitHub owner and repository names in the form of "owner/repo".
-    required: true
+    required: false
 runs:
   using: docker
   image: Dockerfile
