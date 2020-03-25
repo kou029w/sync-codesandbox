@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+// NOTE: Unhandled promise rejection terminates Node.js process with non-zero exit code.
+process.on("unhandledRejection", event => {
+  throw event;
+});
+
+require("./index.js")();

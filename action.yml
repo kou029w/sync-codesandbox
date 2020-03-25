@@ -1,0 +1,13 @@
+name: "Sync CodeSandbox (unofficial)"
+description: "Sync your GitHub repository changes to CodeSandbox"
+branding:
+  color: gray-dark
+  icon: box
+inputs:
+  repo:
+    description: GitHub owner and repository names in the form of "owner/repo".
+    required: true
+runs:
+  using: docker
+  image: Dockerfile
+  args: ["${{ inputs.repo }}"]
