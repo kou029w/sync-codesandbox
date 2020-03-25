@@ -1,14 +1,12 @@
 version: "3"
 services:
   puppeteer-node:
-    image: &puppeteer-node kou029w/puppeteer-node
+    image: kou029w/puppeteer-node
     build:
       context: github.com/puppeteer/puppeteer#:.ci/node12
       dockerfile: Dockerfile.linux
   sync-codesandbox:
-    image: kou029w/sync-codesandbox:${VERSION:-latest}
+    image: kou029w/sync-codesandbox
     build:
       context: "."
-      args:
-        from: *puppeteer-node
     depends_on: [puppeteer-node]
