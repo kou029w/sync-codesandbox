@@ -1,8 +1,45 @@
 #!/usr/bin/env node
 
+const args = require("arg")({
+  "-h": "--help",
+  "--help": Boolean,
+  "--url": String
+});
+
+if (args["--help"]) {
+  console.log(
+    [
+      "Usage: sync-codesandbox [options] repo",
+      " repo        GitHub owner and repository names.",
+      "             eg. owner/repo",
+      "Options:",
+      " -h, --help  Print command line options.",
+      " --url       The URL in the browser pane of CodeSandbox.",
+      "             eg. https://fe8lf.sse.codesandbox.io/"
+    ].join("\n")
+  );
+  return;
+}
+
+const repo = args._[0] || process.env.GITHUB_REPOSITORY;
+if (!repo) {
+  throw new Error(
+    "sync-codesandbox requires a GITHUB_REPOSITORY environment variable like 'owner/repo'"
+  );
+}
+
+const url =
+  args["--url"] &&
+  new URL(
+    [
+      args["--url"].match(/^\s*https?:\/\//) ? "" : "https://",
+      args["--url"].trim()
+    ].join("")
+  );
+
 // NOTE: Unhandled promise rejection terminates Node.js process with non-zero exit code.
 process.on("unhandledRejection", event => {
   throw event;
 });
 
-require("./index.js")();
+require("./index.js")(repo, url);

@@ -1,8 +1,6 @@
 // @ts-check
 const fs = require("fs");
-const arg = require("arg");
 const puppeteer = require("puppeteer");
-const { GITHUB_REPOSITORY } = process.env;
 
 function inDocker() {
   return new Promise(resolve =>
@@ -10,33 +8,30 @@ function inDocker() {
   );
 }
 
-async function main() {
-  const args = arg({
-    "-h": "--help",
-    "--help": Boolean
-  });
+/**
+ * @param {import("puppeteer").Page} page
+ * @param {URL} url
+ */
+async function initializeSandbox(page, url) {
+  const loadingTitle = "Sandbox - CodeSandbox";
+  const loadingText = "Initializing Sandbox Container";
+  await page.goto(url.href);
+  await page.waitForFunction(
+    `document.title !== "${loadingTitle}" && !document.body.textContent.includes("${loadingText}")`
+  );
+}
 
-  if (args["--help"]) {
-    console.log(
-      [
-        `Usage: ${process.argv0} [options] repo`,
-        "Options:",
-        " -h, --help  print command line options"
-      ].join("\n")
-    );
-    return;
-  }
-
-  const repo = args._[0] || GITHUB_REPOSITORY;
-  if (repo == null) {
-    throw new Error(
-      "sync-codesandbox requires a GITHUB_REPOSITORY environment variable like 'owner/repo'"
-    );
-  }
-
+/**
+ * @param {string} repo GitHub owner and repository names in the form of "owner/repo".
+ * @param {URL} url The URL in the browser pane of CodeSandbox.
+ */
+async function main(repo, url) {
   const options = (await inDocker()) ? { args: ["--no-sandbox"] } : {};
   const browser = await puppeteer.launch(options);
   const page = await browser.newPage();
+
+  if (url) await initializeSandbox(page, url);
+
   const response = await page.goto(`https://codesandbox.io/s/github/${repo}`);
   await browser.close();
 

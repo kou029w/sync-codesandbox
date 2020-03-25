@@ -7,7 +7,10 @@ inputs:
   repo:
     description: GitHub owner and repository names in the form of "owner/repo".
     required: false
+  url:
+    description: The URL in the browser pane of CodeSandbox. Eg. "https://fe8lf.sse.codesandbox.io/"
+    required: false
 runs:
   using: docker
   image: Dockerfile
-  args: ["${{ inputs.repo }}"]
+  args: ["--url", "${{ inputs.url }}", "${{ inputs.repo }}"]
